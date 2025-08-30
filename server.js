@@ -1,8 +1,8 @@
 import express from "express";
-import connectDB from "./config/db";
+import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-import userRoutes from "./routes/userRoutes";
-import { requestLogger } from "./middleware/logger.js";
+import userRoutes from "./routes/userRoutes.js";
+import { requestLogger, appLogger } from "./middleware/logger.js";
 
 dotenv.config();
 
@@ -20,4 +20,4 @@ app.get("/", (req,res) => {
 const PORT = process.env.PORT || 5000;
 connectDB();
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost :${PORT}`));
