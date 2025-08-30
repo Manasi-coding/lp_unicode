@@ -2,12 +2,14 @@ import express from "express";
 import connectDB from "./config/db";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
+import { requestLogger } from "./middleware/logger.js";
 
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
+app.use(requestLogger);
 
 app.use("/api/users", userRoutes);
 
