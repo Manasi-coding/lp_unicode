@@ -11,7 +11,9 @@ export const registerUser = async (req, res) => {
     const { name, email, dob, credit_scores, password } = req.body;
     // Validate the required fields
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "Please provide all required fields" });
+      return res
+        .status(400)
+        .json({ message: "Please provide all required fields" });
     }
 
     // Check if user already exists
@@ -25,7 +27,7 @@ export const registerUser = async (req, res) => {
     const hashedPwd = await bcrypt.hash(password, salt);
 
     // Create the new user
-    const newUser = new User({
+    const newUser = User.create({
       name,
       email,
       dob,
@@ -33,6 +35,16 @@ export const registerUser = async (req, res) => {
       password: hashedPwd,
     });
     await newUser.save();
+
+    if (!newUser) {
+      return res.status(400).json({ message: "User not created" });
+    } else {
+      await sendEmail({
+        to: newUser.email,
+        subject: "Welcome to Unicode App",
+        message: "Welcome to Unicode App",
+      });
+    }
 
     const token = generateToken(newUser._id);
 
@@ -63,6 +75,7 @@ export const loginUser = async (req, res) => {
     if (!check) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
+
     // Compare the passwords
     const isMatch = await bcrypt.compare(password, check.password);
     if (!isMatch) {
@@ -70,6 +83,12 @@ export const loginUser = async (req, res) => {
     }
 
     const token = generateToken(check._id);
+
+    await sendEmail({
+      to: check.email,
+      subject: "Welcome to Unicode App",
+      message: "Welcome to Unicode App",
+    });
 
     res.status(200).json({
       message: "Login Successful!",
