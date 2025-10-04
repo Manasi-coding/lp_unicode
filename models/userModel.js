@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     dob: { type: String, required: true },
     credit_scores: { type: Number, required: true },
     password: { type: String, required: true },
+    profile_pic: { type: String, default: "" },
   },
   { timestamps: true }
 );
