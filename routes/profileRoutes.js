@@ -1,9 +1,11 @@
 import express from "express";
 import upload from "../middleware/multer";
 import { uploadProfileIcon } from "../controllers/profileController";
+import { protect } from "../middleware/jwt.js";
 
 const router = express.Router();
 
-router.post("/profile/icon", upload.single("icon"), uploadProfileIcon);
+// Upload/update profile icon (protected)
+router.post("/icon", protect, upload.single("icon"), uploadProfileIcon);
 
 export default router;
