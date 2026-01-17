@@ -1,5 +1,5 @@
-import cloudinary from "../config/cloudinary";
-import User from "../models/userModel";
+import cloudinary from "../config/cloudinary.js";
+import User from "../models/userModel.js";
 import fs from "fs"; // file system (to read, write, delete, and create)
 
 export const uploadProfileIcon = async (req, res) => {

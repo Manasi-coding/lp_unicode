@@ -1,6 +1,6 @@
 import express from "express";
-import upload from "../middleware/multer";
-import { uploadProfileIcon } from "../controllers/profileController";
+import upload from "../middleware/multer.js";
+import { uploadProfileIcon } from "../controllers/profileController.js";
 import { protect } from "../middleware/jwt.js";
 
 const router = express.Router();

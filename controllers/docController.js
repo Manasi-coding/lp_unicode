@@ -1,4 +1,7 @@
 import Document from "../models/docModel.js";
+import { createVersionSnapshot } from "./versionController.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import User from "../models/userModel.js";
 
 // CREATE DOC
 export const createDoc = async (req, res) => {
@@ -52,8 +55,10 @@ export const updateDoc = async (req, res) => {
         .json({ message: "No permission to edit this document!" });
     }
 
+    await createVersionSnapshot(doc, userId);
+
     if (title) doc.title = title;
-    if (content) doc.content = content;
+    if (content !== undefined) doc.content = content;
 
     await doc.save();
     res.status(200).json(doc);
@@ -106,6 +111,18 @@ export const requestAccess = async (req, res) => {
     doc.requests.push({ user: userId, type, status: "pending" });
 
     await doc.save();
+
+    // notify the owner
+    const owner = await User.findById(doc.createdBy);
+
+    sendEmail({
+      to: owner.email,
+      subject: "New document access request",
+      message: `User ${req.user.id} has requested ${type} access to your document "${doc.title}".`,
+    }).catch((err) => {
+      console.error("Access request email failed:", err.message);
+    });
+
     res.status(200).json({ message: "Access request sent!" });
   } catch (err) {
     res.status(500).json({ message: err.message });
