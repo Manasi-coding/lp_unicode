@@ -10,6 +10,8 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import docRoutes from "./routes/docRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 
 import { requestLogger, appLogger } from "./middleware/logger.js";
 import { protect } from "./middleware/jwt.js";
@@ -31,6 +33,8 @@ app.use("/api/auth", authRoutes); // public routes (login/register)
 app.use("/api/users", protect, userRoutes); // protected routes (require JWT)
 app.use("/api/profile", profileRoutes);
 app.use("/api/docs", protect, docRoutes); // protect all doc routes
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/search", searchRoutes);
 
 // Root route
 app.get("/", (req, res) => {

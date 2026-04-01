@@ -2,6 +2,7 @@ import Document from "../models/docModel.js";
 import { createVersionSnapshot } from "./versionController.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import User from "../models/userModel.js";
+import client from "../services/searchService.js";
 
 // CREATE DOC
 export const createDoc = async (req, res) => {
@@ -11,6 +12,18 @@ export const createDoc = async (req, res) => {
       content: req.body.content || "", // optional field
       createdBy: req.user.id,
     });
+
+    await client.index({
+      index: "documents",
+      id: newDoc._id.toString(),
+      document: {
+        title: newDoc.title,
+        content: newDoc.content,
+        tags: newDoc.tags || [],
+        createdBy: newDoc.createdBy.toString(),
+      },
+    });
+
     res.status(201).json(newDoc);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -61,6 +74,18 @@ export const updateDoc = async (req, res) => {
     if (content !== undefined) doc.content = content;
 
     await doc.save();
+
+    await client.index({
+      index: "documents",
+      id: doc._id.toString(),
+      document: {
+        title: doc.title,
+        content: doc.content,
+        tags: doc.tags || [],
+        createdBy: doc.createdBy.toString(),
+      },
+    });
+
     res.status(200).json(doc);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -83,6 +108,12 @@ export const deleteDoc = async (req, res) => {
     }
 
     await doc.deleteOne();
+
+    await client.delete({
+      index: "documents",
+      id: docId,
+    });
+
     res.status(200).json({ message: "Document deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -103,7 +134,7 @@ export const requestAccess = async (req, res) => {
       (r) =>
         r.user.toString() === userId &&
         r.type === type &&
-        r.status === "pending"
+        r.status === "pending",
     );
     if (existingRequest)
       return res.status(400).json({ message: "Request already pending!" });
