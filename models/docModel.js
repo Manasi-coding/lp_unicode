@@ -13,6 +13,7 @@ const documentSchema = new mongoose.Schema(
       view: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       edit: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     },
+    tags: [{ type: String }],
     requests: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

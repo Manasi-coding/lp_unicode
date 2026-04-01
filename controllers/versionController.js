@@ -5,7 +5,7 @@ import DocVersion from "../models/versionModel.js";
 export const createVersionSnapshot = async (document, editedBy) => {
   try {
     const docId = document._id;
-    const latestVersion = await DocVersion.findOne(docId).sort({
+    const latestVersion = await DocVersion.findOne({ documentId: docId }).sort({
       versionNumber: -1,
     }); // sorts the version numbers in descending order... will give the latest version
 
@@ -21,7 +21,7 @@ export const createVersionSnapshot = async (document, editedBy) => {
       versionNumber: nextVersionNumber,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    throw err; // re-throw so the calling controller can handle the error
   }
 };
 
@@ -30,7 +30,7 @@ export const getVersionHistory = async (req, res) => {
   try {
     const docId = req.params.docId;
 
-    const versions = await DocVersion.find(docId)
+    const versions = await DocVersion.find({ documentId: docId })
       .sort({ versionNumber: 1 }) // ascending order
       .select("-__v"); // Exclude the __v field
 

@@ -24,7 +24,7 @@ export const diffVersions = async (req, res) => {
     });
     const toVersion = await DocVersion.findOne({
       documentId: docId,
-      versionNumber: fromVersionNumber,
+      versionNumber: toVersionNumber,
     });
 
     if (!fromVersion || !toVersion)
